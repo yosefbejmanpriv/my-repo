@@ -1,0 +1,693 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>YB Deals – Best Deals Every Day</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{--bg:#0f0f11;--surface:#1a1a1f;--surface2:#222228;--border:rgba(255,255,255,0.07);--text:#f0f0f2;--muted:#8a8a96;--accent:#ff4d00;--accent2:#ff8c42;--hot:#ff2d55;--badge-bg:rgba(255,45,85,0.12);--badge-text:#ff6b87;--green:#00e676;--green-dim:rgba(0,230,118,0.1);--radius:14px;--radius-sm:8px;}
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;font-size:15px;line-height:1.5;min-height:100vh;}
+  header{position:sticky;top:0;z-index:100;background:rgba(15,15,17,0.88);backdrop-filter:blur(16px);border-bottom:1px solid var(--border);padding:0 24px;height:62px;display:flex;align-items:center;justify-content:space-between;}
+  .logo{font-family:'Syne',sans-serif;font-size:22px;font-weight:800;letter-spacing:-0.5px;display:flex;align-items:center;gap:4px;}
+  .logo-yb{color:var(--accent);}
+  .header-right{display:flex;align-items:center;gap:12px;}
+  .search-bar{background:var(--surface);border:1px solid var(--border);border-radius:99px;padding:8px 16px 8px 38px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:14px;width:220px;outline:none;transition:border-color 0.2s,width 0.3s;}
+  .search-bar:focus{border-color:rgba(255,77,0,0.5);width:280px;}
+  .search-wrap{position:relative;}
+  .search-wrap svg{position:absolute;left:12px;top:50%;transform:translateY(-50%);opacity:0.4;pointer-events:none;}
+  .admin-header-btn{background:var(--surface);border:1px solid var(--border);border-radius:99px;padding:8px 16px;color:var(--muted);font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;cursor:pointer;display:flex;align-items:center;gap:6px;transition:background 0.2s,border-color 0.2s,color 0.2s;}
+  .admin-header-btn:hover{background:var(--surface2);color:var(--text);}
+  .admin-header-btn.logged-in{border-color:rgba(255,77,0,0.4);color:var(--accent2);}
+  .hero-strip{background:linear-gradient(135deg,#1a0a00 0%,#0f0f11 60%);border-bottom:1px solid var(--border);padding:36px 24px 32px;position:relative;overflow:hidden;}
+  .hero-strip::before{content:'';position:absolute;top:-60px;right:-60px;width:300px;height:300px;background:radial-gradient(circle,rgba(255,77,0,0.15) 0%,transparent 70%);pointer-events:none;}
+  .hero-title{font-family:'Syne',sans-serif;font-size:clamp(28px,5vw,42px);font-weight:800;letter-spacing:-1px;line-height:1.1;max-width:520px;}
+  .hero-title span{color:var(--accent);}
+  .hero-sub{color:var(--muted);margin-top:8px;font-size:15px;}
+  .hero-stats{display:flex;gap:32px;margin-top:24px;}
+  .stat-num{font-family:'Syne',sans-serif;font-size:22px;font-weight:700;}
+  .stat-label{font-size:12px;color:var(--muted);margin-top:2px;}
+  .admin-banner{display:none;background:rgba(255,77,0,0.08);border-bottom:1px solid rgba(255,77,0,0.2);padding:10px 24px;font-size:13px;color:var(--accent2);align-items:center;gap:10px;}
+  .admin-banner.visible{display:flex;}
+  .admin-banner strong{color:var(--accent);}
+  .cat-nav{display:flex;gap:8px;padding:16px 24px;overflow-x:auto;scrollbar-width:none;border-bottom:1px solid var(--border);}
+  .cat-nav::-webkit-scrollbar{display:none;}
+  .cat-pill{flex-shrink:0;background:var(--surface);border:1px solid var(--border);border-radius:99px;padding:7px 16px;font-size:13px;font-weight:500;color:var(--muted);cursor:pointer;transition:all 0.2s;white-space:nowrap;}
+  .cat-pill:hover{color:var(--text);border-color:rgba(255,255,255,0.2);}
+  .cat-pill.active{background:var(--accent);border-color:var(--accent);color:#fff;}
+  main{padding:32px 24px 60px;max-width:1400px;margin:0 auto;}
+  .section-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;}
+  .section-title{font-family:'Syne',sans-serif;font-size:18px;font-weight:700;display:flex;align-items:center;gap:10px;}
+  .hot-badge{background:var(--badge-bg);color:var(--badge-text);font-size:11px;font-weight:600;padding:3px 9px;border-radius:99px;letter-spacing:0.5px;text-transform:uppercase;animation:pulse 2s ease-in-out infinite;}
+  @keyframes pulse{0%,100%{opacity:1}50%{opacity:0.6}}
+  .deal-row{display:flex;gap:16px;overflow-x:auto;scrollbar-width:none;padding-bottom:8px;margin-bottom:40px;}
+  .deal-row::-webkit-scrollbar{display:none;}
+  .section-divider{height:1px;background:var(--border);margin:0 0 32px;}
+  .deal-card{flex-shrink:0;width:220px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;cursor:pointer;transition:transform 0.2s,border-color 0.2s,box-shadow 0.2s;text-decoration:none;color:inherit;display:block;position:relative;}
+  .deal-card:hover{transform:translateY(-4px);border-color:rgba(255,77,0,0.35);box-shadow:0 12px 32px rgba(0,0,0,0.4);}
+  .card-img{width:100%;height:160px;background:#1e1e24;display:flex;align-items:center;justify-content:center;font-size:52px;padding:0;overflow:hidden;}
+  .card-img img{width:100%;height:100%;object-fit:contain;padding:12px;}
+  .card-img .emoji-fallback{font-size:52px;}
+  .card-body{padding:14px;}
+  .card-store{font-size:11px;color:var(--muted);font-weight:500;text-transform:uppercase;letter-spacing:0.6px;margin-bottom:6px;}
+  .card-title{font-size:14px;font-weight:500;line-height:1.35;margin-bottom:10px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
+  .card-pricing{display:flex;align-items:baseline;gap:8px;margin-bottom:10px;}
+  .price-now{font-family:'Syne',sans-serif;font-size:20px;font-weight:700;}
+  .price-was{font-size:13px;color:var(--muted);text-decoration:line-through;}
+  .discount-tag{position:absolute;top:12px;left:12px;background:var(--accent);color:#fff;font-size:11px;font-weight:700;padding:3px 8px;border-radius:6px;}
+  .hot-tag{position:absolute;top:12px;left:12px;background:var(--hot);color:#fff;font-size:11px;font-weight:700;padding:3px 8px;border-radius:6px;}
+  .card-cta{display:block;background:rgba(255,77,0,0.1);border:1px solid rgba(255,77,0,0.25);color:var(--accent2);text-align:center;padding:9px;border-radius:var(--radius-sm);font-size:13px;font-weight:600;transition:background 0.2s;}
+  .deal-card:hover .card-cta{background:rgba(255,77,0,0.2);}
+  .savings-pill{display:inline-flex;align-items:center;gap:4px;background:var(--green-dim);color:var(--green);font-size:11px;font-weight:600;padding:3px 8px;border-radius:99px;margin-bottom:10px;}
+  .deal-row.hot-row .deal-card{width:240px;}
+  .deal-row.hot-row .card-img{height:175px;}
+
+  /* ADMIN CONTROLS ON CARD */
+  .card-admin-btns{position:absolute;top:10px;right:10px;display:none;flex-direction:column;gap:5px;z-index:10;}
+  .admin-mode .deal-card .card-admin-btns{display:flex;}
+  .card-admin-btn{width:28px;height:28px;border:none;border-radius:6px;cursor:pointer;font-size:13px;display:flex;align-items:center;justify-content:center;}
+  .btn-edit-card{background:rgba(255,140,66,0.85);color:#fff;}
+  .btn-del-card{background:rgba(255,45,85,0.85);color:#fff;}
+
+  .admin-btn{display:none;position:fixed;bottom:24px;right:24px;background:var(--accent);color:#fff;border:none;border-radius:99px;padding:14px 22px;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:600;cursor:pointer;box-shadow:0 4px 20px rgba(255,77,0,0.4);align-items:center;gap:8px;transition:transform 0.2s,box-shadow 0.2s;z-index:50;}
+  .admin-btn:hover{transform:scale(1.04);}
+  .admin-mode .admin-btn{display:flex;}
+
+  /* SKELETON */
+  .skeleton-row{display:flex;gap:16px;margin-bottom:40px;}
+  .skeleton-card{flex-shrink:0;width:220px;height:300px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;position:relative;}
+  .skeleton-card::after{content:'';position:absolute;inset:0;background:linear-gradient(90deg,transparent 0%,rgba(255,255,255,0.04) 50%,transparent 100%);animation:shimmer 1.4s infinite;}
+  @keyframes shimmer{0%{transform:translateX(-100%)}100%{transform:translateX(100%)}}
+
+  /* TOAST */
+  .toast{position:fixed;bottom:80px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--surface2);border:1px solid var(--border);border-radius:99px;padding:10px 20px;font-size:13px;color:var(--text);opacity:0;transition:opacity 0.3s,transform 0.3s;pointer-events:none;z-index:300;white-space:nowrap;}
+  .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+  .toast.success{border-color:rgba(0,230,118,0.3);color:var(--green);}
+  .toast.error{border-color:rgba(255,45,85,0.3);color:#ff6b87;}
+
+  /* MODALS */
+  .modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.75);backdrop-filter:blur(6px);z-index:200;align-items:center;justify-content:center;}
+  .modal-overlay.open{display:flex;}
+  .modal{background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:28px;width:90%;max-width:520px;max-height:90vh;overflow-y:auto;}
+  .modal-title{font-family:'Syne',sans-serif;font-size:20px;font-weight:700;margin-bottom:6px;}
+  .modal-sub{font-size:13px;color:var(--muted);margin-bottom:20px;}
+  .form-group{margin-bottom:14px;}
+  .form-label{font-size:13px;color:var(--muted);margin-bottom:5px;display:block;}
+  .form-input,.form-select,.form-textarea{width:100%;background:var(--bg);border:1px solid var(--border);border-radius:var(--radius-sm);padding:10px 14px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:14px;outline:none;transition:border-color 0.2s;}
+  .form-input:focus,.form-select:focus,.form-textarea:focus{border-color:rgba(255,77,0,0.5);}
+  .form-select option{background:var(--bg);}
+  .form-textarea{resize:vertical;min-height:80px;line-height:1.5;}
+  .form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+  .modal-actions{display:flex;gap:10px;margin-top:20px;}
+  .btn-primary{flex:1;background:var(--accent);color:#fff;border:none;border-radius:var(--radius-sm);padding:12px;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:600;cursor:pointer;transition:opacity 0.2s;display:flex;align-items:center;justify-content:center;gap:8px;}
+  .btn-primary:hover{opacity:0.88;}
+  .btn-primary:disabled{opacity:0.5;cursor:not-allowed;}
+  .btn-cancel{background:transparent;border:1px solid var(--border);border-radius:var(--radius-sm);padding:12px 20px;color:var(--muted);font-family:'DM Sans',sans-serif;font-size:14px;cursor:pointer;transition:border-color 0.2s;}
+  .btn-cancel:hover{border-color:rgba(255,255,255,0.2);}
+  .login-error{display:none;background:rgba(255,45,85,0.1);border:1px solid rgba(255,45,85,0.3);border-radius:var(--radius-sm);padding:10px 14px;color:#ff6b87;font-size:13px;margin-bottom:16px;}
+  .login-error.visible{display:block;}
+  .spinner{width:16px;height:16px;border:2px solid rgba(255,255,255,0.3);border-top-color:#fff;border-radius:50%;animation:spin 0.7s linear infinite;}
+  @keyframes spin{to{transform:rotate(360deg)}}
+
+  /* IMAGE OPTIONS */
+  .img-tabs{display:flex;gap:0;margin-bottom:10px;border:1px solid var(--border);border-radius:var(--radius-sm);overflow:hidden;}
+  .img-tab{flex:1;padding:8px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;text-align:center;cursor:pointer;background:transparent;border:none;color:var(--muted);transition:background 0.2s,color 0.2s;}
+  .img-tab.active{background:var(--accent);color:#fff;}
+  .img-panel{display:none;}.img-panel.active{display:block;}
+  .img-upload-area{border:2px dashed var(--border);border-radius:var(--radius-sm);padding:20px;text-align:center;cursor:pointer;transition:border-color 0.2s;position:relative;}
+  .img-upload-area:hover{border-color:rgba(255,77,0,0.4);}
+  .img-upload-area input{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%;}
+  .img-upload-area .upload-label{font-size:13px;color:var(--muted);}
+  .img-preview{width:100%;height:120px;object-fit:contain;border-radius:var(--radius-sm);margin-top:10px;display:none;}
+  .img-url-preview{width:100%;height:120px;object-fit:contain;border-radius:var(--radius-sm);margin-top:10px;display:none;background:var(--bg);}
+  .img-url-note{font-size:11px;color:var(--muted);margin-top:6px;}
+
+  footer{border-top:1px solid var(--border);padding:24px;text-align:center;color:var(--muted);font-size:13px;line-height:1.7;}
+  footer a{color:var(--muted);text-decoration:underline;}
+  @media(max-width:600px){.hero-stats{gap:20px;}.search-bar{width:130px;}main{padding:24px 16px 60px;}}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo"><span class="logo-yb">YB</span> Deals</div>
+  <div class="header-right">
+    <div class="search-wrap">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+      <input class="search-bar" type="text" placeholder="Search deals…" id="searchInput" oninput="filterDeals()">
+    </div>
+    <button class="admin-header-btn" id="authBtn" onclick="handleAuthBtn()">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+      <span id="authBtnLabel">Admin</span>
+    </button>
+  </div>
+</header>
+
+<div class="admin-banner" id="adminBanner">
+  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+  <span>Logged in as <strong>Admin</strong> — ✏️ edit or ✕ delete any card, or use + to add a deal.</span>
+  <button onclick="logout()" style="margin-left:auto;background:transparent;border:1px solid rgba(255,77,0,0.3);border-radius:6px;padding:4px 12px;color:var(--accent2);font-size:12px;cursor:pointer;font-family:'DM Sans',sans-serif;">Log out</button>
+</div>
+
+<div class="hero-strip">
+  <div class="hero-title">The best <span>deals</span>,<br>curated daily.</div>
+  <div class="hero-sub">Amazon, Walmart & more — updated every day.</div>
+  <div class="hero-stats">
+    <div class="stat-item"><div class="stat-num" id="statTotal">—</div><div class="stat-label">Active deals</div></div>
+    <div class="stat-item"><div class="stat-num">Daily</div><div class="stat-label">Updated</div></div>
+    <div class="stat-item"><div class="stat-num">Free</div><div class="stat-label">Always</div></div>
+  </div>
+</div>
+
+<nav class="cat-nav" id="catNav"></nav>
+<main id="mainContent">
+  <div id="skeleton">
+    <div style="height:28px;width:160px;background:var(--surface);border-radius:8px;margin-bottom:18px;"></div>
+    <div class="skeleton-row"><div class="skeleton-card"></div><div class="skeleton-card"></div><div class="skeleton-card"></div><div class="skeleton-card"></div></div>
+    <div style="height:28px;width:120px;background:var(--surface);border-radius:8px;margin-bottom:18px;"></div>
+    <div class="skeleton-row"><div class="skeleton-card"></div><div class="skeleton-card"></div><div class="skeleton-card"></div></div>
+  </div>
+</main>
+
+<footer>
+  <p><strong>Affiliate Disclosure:</strong> We may earn a small commission when you click links and make purchases, at no extra cost to you.</p>
+  <!-- <p style="margin-top:8px"><a href="#">Privacy Policy</a> · <a href="#">Contact</a></p> -->
+</footer>
+
+<button class="admin-btn" onclick="openDealModal()">
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12h14"/></svg>
+  Add Deal
+</button>
+
+<div class="toast" id="toast"></div>
+
+<!-- LOGIN MODAL -->
+<div class="modal-overlay" id="loginModal">
+  <div class="modal">
+    <div class="modal-title">Admin Login</div>
+    <div class="modal-sub">Only the site owner can log in here.</div>
+    <div class="login-error" id="loginError">Incorrect email or password.</div>
+    <div class="form-group">
+      <label class="form-label">Email</label>
+      <input class="form-input" id="l-email" type="email" placeholder="admin@youremail.com" autocomplete="username">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Password</label>
+      <input class="form-input" id="l-pass" type="password" placeholder="••••••••" autocomplete="current-password">
+    </div>
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeLoginModal()">Cancel</button>
+      <button class="btn-primary" onclick="login()">Log in →</button>
+    </div>
+  </div>
+</div>
+
+<!-- ADD / EDIT DEAL MODAL -->
+<div class="modal-overlay" id="dealModal">
+  <div class="modal">
+    <div class="modal-title" id="dealModalTitle">Add a New Deal</div>
+    <div class="modal-sub">Fill in the details and upload a product image.</div>
+
+    <div class="form-group">
+      <label class="form-label">Product Image</label>
+      <div class="img-tabs">
+        <button class="img-tab active" onclick="switchImgTab('url',this)">🔗 Paste URL</button>
+        <button class="img-tab" onclick="switchImgTab('upload',this)">📁 Upload File</button>
+      </div>
+      <!-- URL panel -->
+      <div class="img-panel active" id="panelUrl">
+        <input class="form-input" id="f-image-url" placeholder="https://m.media-amazon.com/images/I/..." oninput="previewUrl(this.value)">
+        <div class="img-url-note">Right-click any Amazon product image → "Copy image address" and paste it here.</div>
+        <img class="img-url-preview" id="imgUrlPreview" alt="Preview">
+      </div>
+      <!-- Upload panel -->
+      <div class="img-panel" id="panelUpload">
+        <div class="img-upload-area">
+          <input type="file" id="f-image" accept="image/*" onchange="previewFile(this)">
+          <div class="upload-label" id="uploadLabel">📁 Click to upload image from your device</div>
+          <img class="img-preview" id="imgFilePreview" alt="Preview">
+        </div>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Product Name</label>
+      <input class="form-input" id="f-title" placeholder="e.g. Sony WH-1000XM5 Headphones">
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label">Store</label>
+        <input class="form-input" id="f-store" placeholder="Amazon">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Category</label>
+        <select class="form-select" id="f-category">
+          <option value="Tech">Tech & Electronics</option>
+          <option value="Home">Home & Kitchen</option>
+          <option value="Fashion">Fashion & Apparel</option>
+          <option value="Fitness">Fitness & Health</option>
+          <option value="Beauty">Beauty & Personal Care</option>
+          <option value="Toys">Toys & Games</option>
+          <option value="Outdoors">Outdoors & Sports</option>
+          <option value="Books">Books & Media</option>
+          <option value="Food">Food</option>
+          <option value="Office">Office supplies</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label">Current Price ($)</label>
+        <input class="form-input" id="f-price" type="number" step="0.01" placeholder="29.99">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Original Price ($)</label>
+        <input class="form-input" id="f-original" type="number" step="0.01" placeholder="59.99">
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Emoji (fallback if no image)</label>
+      <input class="form-input" id="f-emoji" placeholder="e.g. 🎧">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Affiliate Link</label>
+      <input class="form-input" id="f-link" placeholder="https://amazon.com/dp/...?tag=yourtag-20">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Product Description</label>
+      <textarea class="form-textarea" id="f-description" placeholder="Describe the product, why it's a great deal, key features…"></textarea>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Coupon Instructions (optional)</label>
+      <textarea class="form-textarea" id="f-coupon" placeholder="e.g. Apply code SAVE20 at checkout. Click 'Apply coupon' before placing your order…"></textarea>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Pin to Hot Deals?</label>
+      <select class="form-select" id="f-hot">
+        <option value="false">No</option>
+        <option value="true">Yes — show in Hot Deals row</option>
+      </select>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeDealModal()">Cancel</button>
+      <button class="btn-primary" id="saveDealBtn" onclick="saveDeal()">Add Deal →</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ── CONFIG ──
+const SUPABASE_URL = 'https://pxeeecaveqrhldoblbtm.supabase.co';
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InB4ZWVlY2F2ZXFyaGxkb2JsYnRtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA1MTM4MjYsImV4cCI6MjA5NjA4OTgyNn0.OPdlQGurMfYZzjFaQU6-n-K4TygG0QfkwDbQ9diQT4s';
+const DB      = `${SUPABASE_URL}/rest/v1/deals`;
+const STORAGE = `${SUPABASE_URL}/storage/v1/object/public/product-images`;
+const STORAGE_UPLOAD = `${SUPABASE_URL}/storage/v1/object/product-images`;
+const HEADERS = {'apikey':SUPABASE_KEY,'Authorization':`Bearer ${SUPABASE_KEY}`,'Content-Type':'application/json','Prefer':'return=representation'};
+
+// ── CHANGE THESE ──
+const ADMIN_EMAIL    = 'yosefbejman@gmail.com';
+const ADMIN_PASSWORD = 'Bejmanyo1';
+
+// ── STATE ──
+let isAdmin = false;
+let deals   = [];
+let currentFilter = 'all';
+let editingId = null;  // null = adding, number = editing
+
+const catEmoji = {Tech:'💻',Home:'🏠',Fashion:'👗',Fitness:'🏋️',Beauty:'💄',Toys:'🧸',Outdoors:'⛺',Books:'📚'};
+
+function slug(title){ return title.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,''); }
+function pct(p,o){ return Math.round((1-p/o)*100); }
+function savingsAmt(p,o){ return (o-p).toFixed(0); }
+
+// ── TOAST ──
+function showToast(msg,type=''){
+  const t=document.getElementById('toast');
+  t.textContent=msg; t.className=`toast ${type} show`;
+  setTimeout(()=>t.className='toast',3000);
+}
+
+// ── DB HELPERS ──
+async function dbGet(filter=''){
+  const url=filter?`${DB}?${filter}`:`${DB}?order=created_at.desc`;
+  const r=await fetch(url,{headers:HEADERS});
+  if(!r.ok) throw new Error(await r.text());
+  return r.json();
+}
+async function dbPost(body){
+  const r=await fetch(DB,{
+    method:'POST',
+    headers:{
+      'apikey':SUPABASE_KEY,
+      'Authorization':'Bearer '+SUPABASE_KEY,
+      'Content-Type':'application/json',
+      'Prefer':'return=minimal'
+    },
+    body:JSON.stringify(body)
+  });
+  if(!r.ok) throw new Error(await r.text());
+}
+async function dbPatch(id,body){
+  const r=await fetch(DB+'?id=eq.'+id,{
+    method:'PATCH',
+    headers:{
+      'apikey':SUPABASE_KEY,
+      'Authorization':'Bearer '+SUPABASE_KEY,
+      'Content-Type':'application/json',
+      'Prefer':'return=minimal'
+    },
+    body:JSON.stringify(body)
+  });
+  if(!r.ok){ const t=await r.text(); throw new Error(t); }
+}
+async function dbDelete(id){
+  const r=await fetch(DB+'?id=eq.'+id,{
+    method:'DELETE',
+    headers:{
+      'apikey':SUPABASE_KEY,
+      'Authorization':'Bearer '+SUPABASE_KEY,
+      'Content-Type':'application/json'
+    }
+  });
+  if(!r.ok) throw new Error(await r.text());
+}
+
+// ── IMAGE UPLOAD TO SUPABASE STORAGE ──
+async function uploadImage(file){
+  const ext  = file.name.split('.').pop();
+  const name = `${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
+  const r = await fetch(`${STORAGE_UPLOAD}/${name}`,{
+    method:'POST',
+    headers:{'apikey':SUPABASE_KEY,'Authorization':`Bearer ${SUPABASE_KEY}`,'Content-Type':file.type,'x-upsert':'true'},
+    body: file
+  });
+  if(!r.ok) throw new Error('Image upload failed');
+  return `${STORAGE}/${name}`;
+}
+
+// ── IMAGE TAB SWITCH ──
+let activeImgTab = 'url';
+function switchImgTab(tab, el){
+  activeImgTab = tab;
+  document.querySelectorAll('.img-tab').forEach(t=>t.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('panelUrl').classList.toggle('active', tab==='url');
+  document.getElementById('panelUpload').classList.toggle('active', tab==='upload');
+}
+
+// ── IMAGE PREVIEWS ──
+function previewUrl(val){
+  const prev = document.getElementById('imgUrlPreview');
+  if(val.startsWith('http')){
+    prev.src = val;
+    prev.style.display = 'block';
+    prev.onerror = ()=>{ prev.style.display='none'; };
+  } else {
+    prev.style.display = 'none';
+  }
+}
+function previewFile(input){
+  const file = input.files[0];
+  if(!file) return;
+  const prev = document.getElementById('imgFilePreview');
+  prev.src = URL.createObjectURL(file);
+  prev.style.display = 'block';
+  document.getElementById('uploadLabel').textContent = '✓ ' + file.name;
+}
+
+// ── LOAD ──
+async function loadDeals(){
+  try{
+    deals = await dbGet();
+    const sk = document.getElementById('skeleton');
+    if(sk) sk.remove();
+    buildUI();
+  } catch(e){
+    document.getElementById('skeleton').innerHTML=
+      `<div style="text-align:center;padding:60px 0;color:var(--muted)">Could not load deals.<br><small>${e.message}</small></div>`;
+  }
+}
+
+// ── AUTH ──
+function handleAuthBtn(){ isAdmin ? logout() : openLoginModal(); }
+function openLoginModal(){ document.getElementById('loginModal').classList.add('open'); setTimeout(()=>document.getElementById('l-email').focus(),100); }
+function closeLoginModal(){
+  document.getElementById('loginModal').classList.remove('open');
+  document.getElementById('l-email').value='';
+  document.getElementById('l-pass').value='';
+  document.getElementById('loginError').classList.remove('visible');
+}
+document.getElementById('loginModal').addEventListener('click',e=>{ if(e.target.id==='loginModal') closeLoginModal(); });
+document.getElementById('l-pass').addEventListener('keydown',e=>{ if(e.key==='Enter') login(); });
+
+function login(){
+  const email=document.getElementById('l-email').value.trim();
+  const pass=document.getElementById('l-pass').value;
+  if(email===ADMIN_EMAIL && pass===ADMIN_PASSWORD){
+    isAdmin=true; closeLoginModal();
+    document.body.classList.add('admin-mode');
+    document.getElementById('adminBanner').classList.add('visible');
+    document.getElementById('authBtn').classList.add('logged-in');
+    document.getElementById('authBtnLabel').textContent='Log out';
+    buildUI(); showToast('Welcome back, Admin!','success');
+  } else {
+    document.getElementById('loginError').classList.add('visible');
+    document.getElementById('l-pass').value='';
+    document.getElementById('l-pass').focus();
+  }
+}
+function logout(){
+  isAdmin=false;
+  document.body.classList.remove('admin-mode');
+  document.getElementById('adminBanner').classList.remove('visible');
+  document.getElementById('authBtn').classList.remove('logged-in');
+  document.getElementById('authBtnLabel').textContent='Admin';
+  buildUI(); showToast('Logged out.');
+}
+
+// ── RENDER ──
+function renderCard(deal){
+  const disc=pct(deal.price,deal.original);
+
+  const tag=deal.hot?`<div class="hot-tag">🔥 HOT</div>`:`<div class="discount-tag">-${disc}%</div>`;
+  const imgHtml=deal.image_url
+    ?`<img src="${deal.image_url}" alt="${deal.title}">`
+    :`<span class="emoji-fallback">${deal.emoji||'🛍️'}</span>`;
+  const adminBtns=`
+    <div class="card-admin-btns">
+      <button class="card-admin-btn btn-edit-card" onclick="openEditModal(event,${deal.id})" title="Edit">✏️</button>
+      <button class="card-admin-btn btn-del-card" onclick="deleteDeal(event,${deal.id})" title="Delete">✕</button>
+    </div>`;
+  const dealUrl=`/deal/${slug(deal.title)}`;
+  return `
+    <a class="deal-card" href="${dealUrl}" data-id="${deal.id}" data-title="${deal.title.toLowerCase()}" data-category="${deal.category}">
+      ${tag}${adminBtns}
+      <div class="card-img">${imgHtml}</div>
+      <div class="card-body">
+        <div class="card-store">${deal.store}</div>
+        <div class="card-title">${deal.title}</div>
+        <div class="savings-pill">
+          <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+          -${disc}% OFF
+        </div>
+        <div class="card-pricing">
+          <span class="price-now">$${deal.price}</span>
+          <span class="price-was">$${deal.original}</span>
+        </div>
+        <span class="card-cta">View Deal →</span>
+      </div>
+    </a>`;
+}
+
+function buildUI(){
+  document.getElementById('statTotal').textContent=deals.length;
+  const cats=[...new Set(deals.map(d=>d.category))];
+  const nav=document.getElementById('catNav');
+  nav.innerHTML=`<div class="cat-pill ${currentFilter==='all'?'active':''}" onclick="filterCategory('all',this)">All Deals</div>`;
+  cats.forEach(c=>{
+    nav.innerHTML+=`<div class="cat-pill ${currentFilter===c?'active':''}" onclick="filterCategory('${c}',this)">${catEmoji[c]||''} ${c}</div>`;
+  });
+  const filtered=currentFilter==='all'?deals:deals.filter(d=>d.category===currentFilter);
+  const content=document.getElementById('mainContent');
+  content.innerHTML='';
+  const hotDeals=filtered.filter(d=>d.hot);
+  if(hotDeals.length){
+    content.innerHTML+=`
+      <div class="section-header"><div class="section-title">🔥 Hot Deals <span class="hot-badge">Live</span></div></div>
+      <div class="deal-row hot-row">${hotDeals.map(renderCard).join('')}</div>
+      <div class="section-divider"></div>`;
+  }
+  const catMap={};
+  filtered.filter(d=>!d.hot).forEach(d=>{
+    if(!catMap[d.category]) catMap[d.category]=[];
+    catMap[d.category].push(d);
+  });
+  Object.entries(catMap).forEach(([cat,items])=>{
+    content.innerHTML+=`
+      <div class="section-header"><div class="section-title">${catEmoji[cat]||'🛍️'} ${cat}</div></div>
+      <div class="deal-row">${items.map(renderCard).join('')}</div>`;
+  });
+  if(!hotDeals.length&&!Object.keys(catMap).length){
+    content.innerHTML=`<div style="text-align:center;padding:60px 0;color:var(--muted)">No deals yet.</div>`;
+  }
+}
+
+function filterCategory(cat,el){
+  currentFilter=cat;
+  document.querySelectorAll('.cat-pill').forEach(p=>p.classList.remove('active'));
+  if(el) el.classList.add('active');
+  buildUI();
+}
+function filterDeals(){
+  const q=document.getElementById('searchInput').value.toLowerCase();
+  document.querySelectorAll('.deal-card').forEach(card=>{
+    card.style.display=(card.dataset.title||'').includes(q)?'block':'none';
+  });
+}
+
+// ── DELETE ──
+async function deleteDeal(e,id){
+  e.preventDefault(); e.stopPropagation();
+  if(!isAdmin) return;
+  if(!confirm('Remove this deal?')) return;
+  try{
+    await dbDelete(id);
+    deals=deals.filter(d=>d.id!==id);
+    buildUI(); showToast('Deal removed.','success');
+  } catch(err){ showToast('Could not delete deal.','error'); }
+}
+
+// ── OPEN ADD MODAL ──
+function openDealModal(){
+  if(!isAdmin) return;
+  editingId=null;
+  document.getElementById('dealModalTitle').textContent='Add a New Deal';
+  document.getElementById('saveDealBtn').textContent='Add Deal →';
+  resetForm();
+  document.getElementById('dealModal').classList.add('open');
+}
+
+// ── OPEN EDIT MODAL ──
+function openEditModal(e,id){
+  e.preventDefault(); e.stopPropagation();
+  if(!isAdmin) return;
+  const deal=deals.find(d=>d.id===id);
+  if(!deal) return;
+  editingId=id;
+  document.getElementById('dealModalTitle').textContent='Edit Deal';
+  document.getElementById('saveDealBtn').textContent='Save Changes →';
+  // pre-fill
+  document.getElementById('f-title').value=deal.title||'';
+  document.getElementById('f-store').value=deal.store||'';
+  document.getElementById('f-category').value=deal.category||'Tech';
+  document.getElementById('f-price').value=deal.price||'';
+  document.getElementById('f-original').value=deal.original||'';
+  document.getElementById('f-emoji').value=deal.emoji||'';
+  document.getElementById('f-link').value=deal.link||'';
+  document.getElementById('f-description').value=deal.description||'';
+  document.getElementById('f-coupon').value=deal.coupon||'';
+  document.getElementById('f-hot').value=deal.hot?'true':'false';
+  // pre-fill image
+  if(deal.image_url){
+    // check if it looks like an external URL (not a supabase storage path)
+    document.getElementById('f-image-url').value = deal.image_url;
+    previewUrl(deal.image_url);
+    // switch to URL tab
+    activeImgTab='url';
+    document.querySelectorAll('.img-tab')[0].classList.add('active');
+    document.querySelectorAll('.img-tab')[1].classList.remove('active');
+    document.getElementById('panelUrl').classList.add('active');
+    document.getElementById('panelUpload').classList.remove('active');
+  }
+  document.getElementById('dealModal').classList.add('open');
+}
+
+function closeDealModal(){
+  document.getElementById('dealModal').classList.remove('open');
+  resetForm();
+}
+document.getElementById('dealModal').addEventListener('click',e=>{ if(e.target.id==='dealModal') closeDealModal(); });
+
+function resetForm(){
+  ['f-title','f-store','f-price','f-original','f-emoji','f-link','f-description','f-coupon','f-image-url'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('f-category').value='Tech';
+  document.getElementById('f-hot').value='false';
+  document.getElementById('f-image').value='';
+  document.getElementById('imgFilePreview').style.display='none';
+  document.getElementById('imgFilePreview').src='';
+  document.getElementById('imgUrlPreview').style.display='none';
+  document.getElementById('imgUrlPreview').src='';
+  document.getElementById('uploadLabel').textContent='📁 Click to upload image from your device';
+  // reset to URL tab
+  activeImgTab='url';
+  document.querySelectorAll('.img-tab')[0].classList.add('active');
+  document.querySelectorAll('.img-tab')[1].classList.remove('active');
+  document.getElementById('panelUrl').classList.add('active');
+  document.getElementById('panelUpload').classList.remove('active');
+  editingId=null;
+}
+
+// ── SAVE (ADD or EDIT) ──
+async function saveDeal(){
+  if(!isAdmin) return;
+  const currentEditingId = editingId; // capture before any reset can clear it
+  const title   =document.getElementById('f-title').value.trim();
+  const store   =document.getElementById('f-store').value.trim()||'Amazon';
+  const category=document.getElementById('f-category').value;
+  const price   =parseFloat(document.getElementById('f-price').value);
+  const original=parseFloat(document.getElementById('f-original').value);
+  const emoji   =document.getElementById('f-emoji').value.trim();
+  const link    =document.getElementById('f-link').value.trim();
+  const description=document.getElementById('f-description').value.trim();
+  const coupon  =document.getElementById('f-coupon').value.trim();
+  const hot     =document.getElementById('f-hot').value==='true';
+
+  if(!title||isNaN(price)||isNaN(original)){showToast('Fill in name and both prices.','error');return;}
+  if(original<=price){showToast('Original must be higher than current price.','error');return;}
+
+  const btn=document.getElementById('saveDealBtn');
+  btn.disabled=true;
+  btn.innerHTML='<div class="spinner"></div> Saving…';
+
+  try{
+    // resolve image: uploaded file takes priority, then URL, then keep existing
+    let image_url = null;
+    const imgFile = document.getElementById('f-image').files[0];
+    const imgUrlInput = document.getElementById('f-image-url').value.trim();
+
+    if(activeImgTab === 'upload' && imgFile){
+      image_url = await uploadImage(imgFile);
+    } else if(activeImgTab === 'url' && imgUrlInput){
+      image_url = imgUrlInput;
+    } else if(currentEditingId){
+      const existing = deals.find(d=>d.id===currentEditingId);
+      image_url = existing?.image_url || null;
+    }
+
+    const payload={title,store,category,price,original,emoji,link,description,coupon,hot,image_url};
+
+    if(currentEditingId){
+      await dbPatch(currentEditingId,payload);
+      showToast('Deal updated!','success');
+    } else {
+      await dbPost(payload);
+      showToast('Deal added!','success');
+    }
+    // Reload fresh from Supabase so the new deal appears for everyone
+    deals = await dbGet();
+    buildUI();
+    closeDealModal();
+  } catch(err){
+    console.error(err);
+    const msg=err.message||""; if(msg.includes("column")||msg.includes("schema")){showToast("Run the SQL column update in Supabase first.","error");}else if(msg.includes("upload")){showToast("Image upload failed — use URL tab instead.","error");}else{showToast("Save error: "+(msg.slice(0,80)||"unknown"),"error");}
+  } finally{
+    btn.disabled=false;
+    btn.innerHTML=currentEditingId?'Save Changes →':'Add Deal →';
+  }
+}
+
+loadDeals();
+</script>
+</body>
+</html>

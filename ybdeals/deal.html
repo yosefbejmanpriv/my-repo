@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>YB Deals</title>
+<!-- OG tags injected server-side by Netlify edge function -->
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg:#0f0f11;--surface:#1a1a1f;--surface2:#222228;--border:rgba(255,255,255,0.07);
+    --text:#f0f0f2;--muted:#8a8a96;--accent:#ff4d00;--accent2:#ff8c42;
+    --green:#00e676;--green-dim:rgba(0,230,118,0.1);--radius:14px;--radius-sm:8px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min-height:100vh;}
+  header{position:sticky;top:0;z-index:100;background:rgba(15,15,17,0.88);backdrop-filter:blur(16px);border-bottom:1px solid var(--border);padding:0 24px;height:62px;display:flex;align-items:center;justify-content:space-between;}
+  .logo{font-family:'Syne',sans-serif;font-size:22px;font-weight:800;letter-spacing:-0.5px;text-decoration:none;color:var(--text);display:flex;align-items:center;gap:4px;}
+  .logo-yb{color:var(--accent);}
+  .back-btn{display:flex;align-items:center;gap:6px;background:var(--surface);border:1px solid var(--border);border-radius:99px;padding:8px 16px;color:var(--muted);font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;cursor:pointer;text-decoration:none;transition:color 0.2s,border-color 0.2s;}
+  .back-btn:hover{color:var(--text);border-color:rgba(255,255,255,0.2);}
+
+  .page{max-width:900px;margin:0 auto;padding:40px 24px 80px;}
+
+  /* BREADCRUMB */
+  .breadcrumb{font-size:13px;color:var(--muted);margin-bottom:28px;display:flex;align-items:center;gap:6px;}
+  .breadcrumb a{color:var(--muted);text-decoration:none;transition:color 0.2s;}
+  .breadcrumb a:hover{color:var(--text);}
+  .breadcrumb span{opacity:0.4;}
+
+  /* DEAL LAYOUT */
+  .deal-layout{display:grid;grid-template-columns:1fr 1fr;gap:40px;align-items:start;}
+  @media(max-width:640px){.deal-layout{grid-template-columns:1fr;}}
+
+  /* IMAGE */
+  .product-img-wrap{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;aspect-ratio:1;display:flex;align-items:center;justify-content:center;font-size:80px;}
+  .product-img-wrap img{width:100%;height:100%;object-fit:contain;padding:24px;}
+
+  /* DEAL INFO */
+  .deal-info{}
+  .deal-store{font-size:12px;color:var(--muted);font-weight:500;text-transform:uppercase;letter-spacing:0.8px;margin-bottom:10px;}
+  .deal-title{font-family:'Syne',sans-serif;font-size:clamp(20px,4vw,28px);font-weight:800;line-height:1.2;margin-bottom:16px;}
+  .deal-pricing{display:flex;align-items:baseline;gap:12px;margin-bottom:8px;}
+  .price-now{font-family:'Syne',sans-serif;font-size:36px;font-weight:800;color:var(--text);}
+  .price-was{font-size:18px;color:var(--muted);text-decoration:line-through;}
+  .savings-row{display:flex;gap:10px;margin-bottom:24px;flex-wrap:wrap;}
+  .savings-pill{display:inline-flex;align-items:center;gap:4px;background:var(--green-dim);color:var(--green);font-size:12px;font-weight:600;padding:4px 12px;border-radius:99px;}
+  .disc-pill{display:inline-flex;align-items:center;background:rgba(255,77,0,0.12);color:var(--accent2);font-size:12px;font-weight:600;padding:4px 12px;border-radius:99px;}
+
+  /* GET DEAL BTN */
+  .get-deal-btn{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;background:var(--accent);color:#fff;border:none;border-radius:var(--radius-sm);padding:16px;font-family:'DM Sans',sans-serif;font-size:16px;font-weight:700;cursor:pointer;text-decoration:none;transition:opacity 0.2s,transform 0.15s;margin-bottom:12px;}
+  .get-deal-btn:hover{opacity:0.88;transform:translateY(-1px);}
+  .deal-note{font-size:12px;color:var(--muted);text-align:center;margin-bottom:28px;}
+
+  /* DIVIDER */
+  .info-divider{height:1px;background:var(--border);margin:24px 0;}
+
+  /* DESCRIPTION */
+  .section-label{font-family:'Syne',sans-serif;font-size:15px;font-weight:700;margin-bottom:10px;display:flex;align-items:center;gap:8px;}
+  .description-text{font-size:14px;color:#c0c0cc;line-height:1.7;}
+
+  /* COUPON BOX */
+  .coupon-box{background:rgba(255,77,0,0.06);border:1px dashed rgba(255,77,0,0.3);border-radius:var(--radius);padding:20px;margin-top:0;}
+  .coupon-label{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.8px;color:var(--accent2);margin-bottom:8px;}
+  .coupon-text{font-size:14px;color:#d0d0da;line-height:1.7;white-space:pre-wrap;}
+
+  /* LOADING / ERROR */
+  .state-msg{text-align:center;padding:80px 24px;color:var(--muted);}
+  .state-msg h2{font-family:'Syne',sans-serif;font-size:24px;color:var(--text);margin-bottom:8px;}
+
+  /* SHARE BAR */
+  .share-bar{display:flex;align-items:center;gap:10px;margin-top:20px;flex-wrap:wrap;}
+  .share-btn{display:inline-flex;align-items:center;gap:7px;padding:10px 18px;border-radius:99px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;cursor:pointer;border:none;transition:opacity 0.2s;}
+  .share-btn:hover{opacity:0.85;}
+  .share-copy{background:var(--surface);border:1px solid var(--border)!important;color:var(--text);border:none;}
+  .share-wa{background:#25D366;color:#fff;}
+  .share-label{font-size:13px;color:var(--muted);font-weight:500;}
+
+  footer{border-top:1px solid var(--border);padding:24px;text-align:center;color:var(--muted);font-size:13px;line-height:1.7;}
+  footer a{color:var(--muted);text-decoration:underline;}
+</style>
+</head>
+<body>
+
+<header>
+  <a class="logo" href="/"><span class="logo-yb">YB</span> Deals</a>
+  <a class="back-btn" href="/">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+    All Deals
+  </a>
+</header>
+
+<div class="page" id="pageContent">
+  <div class="state-msg"><p>Loading deal…</p></div>
+</div>
+
+<footer>
+  <p><strong>Affiliate Disclosure:</strong> We may earn a small commission when you click links and make purchases, at no extra cost to you.</p>
+</footer>
+
+<script>
+const SUPABASE_URL = 'https://pxeeecaveqrhldoblbtm.supabase.co';
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InB4ZWVlY2F2ZXFyaGxkb2JsYnRtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA1MTM4MjYsImV4cCI6MjA5NjA4OTgyNn0.OPdlQGurMfYZzjFaQU6-n-K4TygG0QfkwDbQ9diQT4s';
+const DB = SUPABASE_URL + '/rest/v1/deals';
+const HEADERS = { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + SUPABASE_KEY };
+
+function slug(title) {
+  return title.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
+}
+
+function pct(p,o){ return Math.round((1-p/o)*100); }
+
+async function loadDeal() {
+  // get slug from URL: /deal/product-name
+  const parts = window.location.pathname.split('/');
+  const dealSlug = parts[parts.length - 1] || parts[parts.length - 2];
+
+  if (!dealSlug) { showError(); return; }
+
+  try {
+    const res = await fetch(DB + '?order=created_at.desc', { headers: HEADERS });
+    const deals = await res.json();
+    const deal = deals.find(d => slug(d.title) === dealSlug);
+    if (!deal) { showError(); return; }
+    renderDeal(deal);
+    document.title = deal.title + " – YB Deals";
+  } catch(e) {
+    console.error('loadDeal error:', e);
+    showError();
+  }
+}
+
+function renderDeal(d) {
+  const disc = pct(d.price, d.original);
+  const save = (d.original - d.price).toFixed(0);
+
+  const imgHtml = d.image_url
+    ? `<img src="${d.image_url}" alt="${d.title}">`
+    : `<span>${d.emoji || '🛍️'}</span>`;
+
+  const couponHtml = d.coupon
+    ? `<div class="info-divider"></div>
+       <div class="section-label">🏷️ Coupon / How to Apply</div>
+       <div class="coupon-box">
+         <div class="coupon-label">Instructions</div>
+         <div class="coupon-text">${d.coupon}</div>
+       </div>`
+    : '';
+
+  const descHtml = d.description
+    ? `<div class="info-divider"></div>
+       <div class="section-label">📋 About this deal</div>
+       <div class="description-text">${d.description}</div>`
+    : '';
+
+  document.getElementById('pageContent').innerHTML = `
+    <div class="breadcrumb">
+      <a href="/">Home</a>
+      <span>›</span>
+      <a href="/">${d.category}</a>
+      <span>›</span>
+      ${d.title}
+    </div>
+    <div class="deal-layout">
+      <div class="product-img-wrap">${imgHtml}</div>
+      <div class="deal-info">
+        <div class="deal-store">${d.store}</div>
+        <div class="deal-title">${d.title}</div>
+        <div class="deal-pricing">
+          <span class="price-now">$${d.price}</span>
+          <span class="price-was">$${d.original}</span>
+        </div>
+        <div class="savings-row">
+          <span class="disc-pill">-${disc}% OFF</span>
+        </div>
+        <a class="get-deal-btn" href="${d.link || '#'}" target="_blank" rel="noopener sponsored">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+          Get Deal at ${d.store}
+        </a>
+        <div class="deal-note">You'll be redirected to ${d.store}. Prices may vary.</div>
+        <div class="share-bar">
+          <span class="share-label">Share:</span>
+          <button class="share-btn share-copy" onclick="copyLink()">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+            Copy link
+          </button>
+          <button class="share-btn share-wa" onclick="shareWhatsApp()">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413Z"/></svg>
+            WhatsApp
+          </button>
+        </div>
+        ${descHtml}
+        ${couponHtml}
+      </div>
+    </div>`;
+}
+
+// OG tags handled server-side by edge function
+
+function copyLink() {
+  const url = window.location.href;
+  navigator.clipboard.writeText(url).then(() => {
+    const btn = document.querySelector('.share-copy');
+    const orig = btn.innerHTML;
+    btn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg> Copied!';
+    btn.style.borderColor = 'rgba(0,230,118,0.4)';
+    btn.style.color = '#00e676';
+    setTimeout(() => { btn.innerHTML = orig; btn.style.borderColor = ''; btn.style.color = ''; }, 2000);
+  });
+}
+
+function shareWhatsApp() {
+  var url = window.location.href;
+  var title = document.title;
+  window.open('https://wa.me/?text=' + encodeURIComponent(title + '\n' + url), '_blank');
+}
+
+function showError() {
+  document.getElementById('pageContent').innerHTML = `
+    <div class="state-msg">
+      <h2>Deal not found</h2>
+      <p>This deal may have expired or been removed.</p>
+      <a href="/" style="display:inline-block;margin-top:20px;background:var(--accent);color:#fff;padding:10px 24px;border-radius:99px;text-decoration:none;font-weight:600;">← Back to all deals</a>
+    </div>`;
+}
+
+loadDeal();
+</script>
+</body>
+</html>
