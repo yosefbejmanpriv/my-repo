@@ -5,129 +5,437 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>YB Deals</title>
 <!-- OG tags injected server-side by Netlify edge function -->
-<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@400;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,400&display=swap" rel="stylesheet">
 <style>
-  :root {
-    --bg:#0f0f11;--surface:#1a1a1f;--surface2:#222228;--border:rgba(255,255,255,0.07);
-    --text:#f0f0f2;--muted:#8a8a96;--accent:#ff4d00;--accent2:#ff8c42;
-    --green:#00e676;--green-dim:rgba(0,230,118,0.1);--radius:14px;--radius-sm:8px;
-  }
-  *{box-sizing:border-box;margin:0;padding:0;}
-  body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min-height:100vh;}
-  header{position:sticky;top:0;z-index:100;background:rgba(15,15,17,0.88);backdrop-filter:blur(16px);border-bottom:1px solid var(--border);padding:0 24px;height:62px;display:flex;align-items:center;justify-content:space-between;}
-  .logo{font-family:'Syne',sans-serif;font-size:22px;font-weight:800;letter-spacing:-0.5px;text-decoration:none;color:var(--text);display:flex;align-items:center;gap:4px;}
-  .logo-yb{color:var(--accent);}
-  .back-btn{display:flex;align-items:center;gap:6px;background:var(--surface);border:1px solid var(--border);border-radius:99px;padding:8px 16px;color:var(--muted);font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;cursor:pointer;text-decoration:none;transition:color 0.2s,border-color 0.2s;}
-  .back-btn:hover{color:var(--text);border-color:rgba(255,255,255,0.2);}
+:root {
+  --bg: #080809;
+  --bg2: #0c0c0f;
+  --surface: #131318;
+  --surface2: #1a1a22;
+  --surface3: #202028;
+  --border: rgba(255,255,255,0.06);
+  --border2: rgba(255,255,255,0.1);
+  --text: #f0f0f4;
+  --text2: #c4c4d0;
+  --muted: #72728a;
+  --accent: #ff4d00;
+  --accent2: #ff7a35;
+  --accent3: #ffaa6e;
+  --hot: #ff2d55;
+  --green: #00e676;
+  --green-dim: rgba(0,230,118,0.07);
+  --radius: 16px;
+  --radius-sm: 10px;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 15px;
+  line-height: 1.5;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+body::after {
+  content: '';
+  position: fixed; inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+  pointer-events: none; z-index: 9999; opacity: 0.35;
+}
 
-  .page{max-width:900px;margin:0 auto;padding:40px 24px 80px;}
+/* ── HEADER ── */
+header {
+  position: sticky; top: 0; z-index: 200;
+  height: 64px;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 28px;
+  background: rgba(8,8,9,0.82);
+  backdrop-filter: blur(24px) saturate(180%);
+  border-bottom: 1px solid var(--border);
+  transition: box-shadow 0.3s;
+}
+header.scrolled { box-shadow: 0 1px 0 var(--border2), 0 8px 32px rgba(0,0,0,0.5); }
+.logo {
+  font-family: 'Bricolage Grotesque', sans-serif;
+  font-size: 23px; font-weight: 800; letter-spacing: -0.8px;
+  display: flex; align-items: center; text-decoration: none; color: var(--text);
+}
+.logo-yb { color: var(--accent); }
+.back-btn {
+  display: flex; align-items: center; gap: 6px;
+  background: var(--surface2); border: 1px solid var(--border);
+  border-radius: 99px; padding: 9px 16px;
+  color: var(--muted); font-family: 'DM Sans', sans-serif;
+  font-size: 13px; font-weight: 500; cursor: pointer;
+  text-decoration: none;
+  transition: color 0.2s, border-color 0.2s, background 0.2s;
+}
+.back-btn:hover { color: var(--text); border-color: var(--border2); background: var(--surface3); }
 
-  /* BREADCRUMB */
-  .breadcrumb{font-size:13px;color:var(--muted);margin-bottom:28px;display:flex;align-items:center;gap:6px;}
-  .breadcrumb a{color:var(--muted);text-decoration:none;transition:color 0.2s;}
-  .breadcrumb a:hover{color:var(--text);}
-  .breadcrumb span{opacity:0.4;}
+/* ── PAGE ── */
+.page {
+  max-width: 960px; margin: 0 auto;
+  padding: 44px 28px 100px;
+  animation: fadeIn 0.4s ease both;
+}
+@keyframes fadeIn { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:none} }
 
-  /* DEAL LAYOUT */
-  .deal-layout{display:grid;grid-template-columns:1fr 1fr;gap:40px;align-items:start;}
-  @media(max-width:640px){.deal-layout{grid-template-columns:1fr;}}
+/* ── BREADCRUMB ── */
+.breadcrumb {
+  font-size: 13px; color: var(--muted);
+  margin-bottom: 30px;
+  display: flex; align-items: center; gap: 6px;
+}
+.breadcrumb a { color: var(--muted); text-decoration: none; transition: color 0.2s; }
+.breadcrumb a:hover { color: var(--text); }
+.breadcrumb span { opacity: 0.35; }
 
-  /* IMAGE */
-  .product-img-wrap{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;aspect-ratio:1;display:flex;align-items:center;justify-content:center;font-size:80px;}
-  .product-img-wrap img{width:100%;height:100%;object-fit:contain;padding:24px;}
+/* ── DEAL LAYOUT ── */
+.deal-layout {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 44px;
+  align-items: start;
+}
+@media (max-width: 680px) {
+  .deal-layout { grid-template-columns: 1fr; gap: 28px; }
+  .page { padding: 28px 16px 80px; }
+  header { padding: 0 16px; }
+}
 
-  /* DEAL INFO */
-  .deal-info{}
-  .deal-store{font-size:12px;color:var(--muted);font-weight:500;text-transform:uppercase;letter-spacing:0.8px;margin-bottom:10px;}
-  .deal-title{font-family:'Syne',sans-serif;font-size:clamp(20px,4vw,28px);font-weight:800;line-height:1.2;margin-bottom:16px;}
-  .deal-pricing{display:flex;align-items:baseline;gap:12px;margin-bottom:8px;}
-  .price-now{font-family:'Syne',sans-serif;font-size:36px;font-weight:800;color:var(--text);}
-  .price-was{font-size:18px;color:var(--muted);text-decoration:line-through;}
-  .savings-row{display:flex;gap:10px;margin-bottom:24px;flex-wrap:wrap;}
-  .savings-pill{display:inline-flex;align-items:center;gap:4px;background:var(--green-dim);color:var(--green);font-size:12px;font-weight:600;padding:4px 12px;border-radius:99px;}
-  .disc-pill{display:inline-flex;align-items:center;background:rgba(255,77,0,0.12);color:var(--accent2);font-size:12px;font-weight:600;padding:4px 12px;border-radius:99px;}
+/* ── IMAGE ── */
+.product-img-wrap {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+  aspect-ratio: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 80px;
+  position: relative;
+}
+.product-img-wrap::after {
+  content: '';
+  position: absolute; inset: 0;
+  background: linear-gradient(135deg, rgba(255,255,255,0.03) 0%, transparent 60%);
+  pointer-events: none;
+}
+.product-img-wrap img {
+  width: 100%; height: 100%;
+  object-fit: contain; padding: 24px;
+  transition: transform 0.5s ease;
+}
+.product-img-wrap:hover img { transform: scale(1.04); }
 
-  /* GET DEAL BTN */
-  .get-deal-btn{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;background:var(--accent);color:#fff;border:none;border-radius:var(--radius-sm);padding:16px;font-family:'DM Sans',sans-serif;font-size:16px;font-weight:700;cursor:pointer;text-decoration:none;transition:opacity 0.2s,transform 0.15s;margin-bottom:12px;}
-  .get-deal-btn:hover{opacity:0.88;transform:translateY(-1px);}
-  .deal-note{font-size:12px;color:var(--muted);text-align:center;margin-bottom:28px;}
+/* ── DEAL INFO ── */
+.deal-store {
+  font-size: 11px; color: var(--muted);
+  font-weight: 600; text-transform: uppercase;
+  letter-spacing: 0.9px; margin-bottom: 10px;
+}
+.deal-title {
+  font-family: 'Bricolage Grotesque', sans-serif;
+  font-size: clamp(22px, 3.5vw, 30px);
+  font-weight: 800; line-height: 1.18;
+  letter-spacing: -0.8px;
+  margin-bottom: 18px;
+}
+.deal-pricing {
+  display: flex; align-items: baseline;
+  gap: 12px; margin-bottom: 10px;
+}
+.price-now {
+  font-family: 'Bricolage Grotesque', sans-serif;
+  font-size: 40px; font-weight: 800;
+  letter-spacing: -1.5px;
+}
+.price-was { font-size: 18px; color: var(--muted); text-decoration: line-through; }
 
-  /* DIVIDER */
-  .info-divider{height:1px;background:var(--border);margin:24px 0;}
+.savings-row { display: flex; gap: 8px; margin-bottom: 24px; flex-wrap: wrap; align-items: center; }
+.disc-pill {
+  display: inline-flex; align-items: center;
+  background: rgba(255,77,0,0.1); color: var(--accent2);
+  font-size: 12px; font-weight: 700; padding: 4px 12px;
+  border-radius: 99px; border: 1px solid rgba(255,77,0,0.2);
+}
+.save-pill {
+  display: inline-flex; align-items: center; gap: 4px;
+  background: var(--green-dim); color: var(--green);
+  font-size: 12px; font-weight: 700; padding: 4px 12px;
+  border-radius: 99px; border: 1px solid rgba(0,230,118,0.15);
+}
 
-  /* DESCRIPTION */
-  .section-label{font-family:'Syne',sans-serif;font-size:15px;font-weight:700;margin-bottom:10px;display:flex;align-items:center;gap:8px;}
-  .description-text{font-size:14px;color:#c0c0cc;line-height:1.7;}
+/* ── CTA ── */
+.get-deal-btn {
+  display: flex; align-items: center; justify-content: center; gap: 10px;
+  width: 100%; background: var(--accent); color: #fff;
+  border: none; border-radius: var(--radius-sm);
+  padding: 17px; font-family: 'DM Sans', sans-serif;
+  font-size: 16px; font-weight: 700; cursor: pointer;
+  text-decoration: none;
+  transition: opacity 0.2s, transform 0.2s, box-shadow 0.2s;
+  margin-bottom: 11px;
+  box-shadow: 0 4px 20px rgba(255,77,0,0.3);
+}
+.get-deal-btn:hover { opacity: 0.9; transform: translateY(-2px); box-shadow: 0 8px 28px rgba(255,77,0,0.45); }
+.deal-note { font-size: 12px; color: var(--muted); text-align: center; margin-bottom: 26px; }
 
-  /* COUPON BOX */
-  .coupon-box{background:rgba(255,77,0,0.06);border:1px dashed rgba(255,77,0,0.3);border-radius:var(--radius);padding:20px;margin-top:0;}
-  .coupon-label{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.8px;color:var(--accent2);margin-bottom:8px;}
-  .coupon-text{font-size:14px;color:#d0d0da;line-height:1.7;white-space:pre-wrap;}
+/* ── DIVIDER ── */
+.info-divider {
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--border2) 20%, var(--border2) 80%, transparent);
+  margin: 24px 0;
+}
 
-  /* LOADING / ERROR */
-  .state-msg{text-align:center;padding:80px 24px;color:var(--muted);}
-  .state-msg h2{font-family:'Syne',sans-serif;font-size:24px;color:var(--text);margin-bottom:8px;}
+/* ── SECTION LABELS ── */
+.section-label {
+  font-family: 'Bricolage Grotesque', sans-serif;
+  font-size: 15px; font-weight: 700;
+  margin-bottom: 10px;
+  display: flex; align-items: center; gap: 8px;
+}
+.description-text { font-size: 14px; color: var(--text2); line-height: 1.75; }
 
-  /* SHARE BAR */
-  .share-bar{display:flex;align-items:center;gap:10px;margin-top:20px;flex-wrap:wrap;}
-  .share-btn{display:inline-flex;align-items:center;gap:7px;padding:10px 18px;border-radius:99px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;cursor:pointer;border:none;transition:opacity 0.2s;}
-  .share-btn:hover{opacity:0.85;}
-  .share-copy{background:var(--surface);border:1px solid var(--border)!important;color:var(--text);border:none;}
-  .share-wa{background:#25D366;color:#fff;}
-  .share-label{font-size:13px;color:var(--muted);font-weight:500;}
+/* ── COUPON ── */
+.coupon-box {
+  background: rgba(255,77,0,0.05);
+  border: 1px dashed rgba(255,77,0,0.25);
+  border-radius: var(--radius);
+  padding: 20px;
+  position: relative;
+  overflow: hidden;
+}
+.coupon-box::before {
+  content: '';
+  position: absolute; top: 0; left: 0; right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, rgba(255,77,0,0.4), transparent);
+}
+.coupon-label { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.9px; color: var(--accent2); margin-bottom: 8px; }
+.coupon-text { font-size: 14px; color: var(--text2); line-height: 1.7; white-space: pre-wrap; }
 
-  footer{border-top:1px solid var(--border);padding:24px;text-align:center;color:var(--muted);font-size:13px;line-height:1.7;}
-  footer a{color:var(--muted);text-decoration:underline;}
+/* ── SHARE ── */
+.share-bar {
+  display: flex; align-items: center;
+  gap: 8px; margin-top: 20px; flex-wrap: wrap;
+}
+.share-label { font-size: 13px; color: var(--muted); font-weight: 500; }
+.share-btn {
+  display: inline-flex; align-items: center; gap: 7px;
+  padding: 9px 16px; border-radius: 99px;
+  font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 600;
+  cursor: pointer; border: none; transition: opacity 0.2s, transform 0.2s;
+}
+.share-btn:hover { opacity: 0.85; transform: translateY(-1px); }
+.share-copy { background: var(--surface2); border: 1px solid var(--border2) !important; color: var(--text); }
+.share-wa { background: #25D366; color: #fff; }
+
+/* ── LOADING / ERROR ── */
+.state-msg { text-align: center; padding: 100px 24px; color: var(--muted); }
+.state-msg h2 {
+  font-family: 'Bricolage Grotesque', sans-serif;
+  font-size: 26px; color: var(--text); margin-bottom: 10px;
+}
+
+footer { border-top: 1px solid var(--border); padding: 28px; text-align: center; color: var(--muted); font-size: 13px; line-height: 1.8; }
+footer strong { color: var(--text2); }
+footer a { color: var(--muted); text-decoration: underline; }
+
+/* ── SOCIAL HEADER ICONS ── */
+.social-header-icons { display: flex; align-items: center; gap: 6px; }
+.social-icon-btn {
+  width: 36px; height: 36px; border-radius: 99px;
+  border: 1px solid var(--border); background: var(--surface2);
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; text-decoration: none; transition: all 0.22s;
+}
+.social-icon-btn svg { width: 16px; height: 16px; }
+.social-icon-btn.ig { color: #e1306c; }
+.social-icon-btn.ig:hover { background: rgba(225,48,108,0.12); border-color: rgba(225,48,108,0.35); }
+.social-icon-btn.wa { color: #25d366; }
+.social-icon-btn.wa:hover { background: rgba(37,211,102,0.1); border-color: rgba(37,211,102,0.3); }
+
+/* ── FOOTER ── */
+footer { border-top: 1px solid var(--border); padding: 36px 28px; color: var(--muted); font-size: 13px; line-height: 1.8; }
+.footer-inner { max-width: 960px; margin: 0 auto; display: grid; grid-template-columns: 1fr auto; gap: 28px; align-items: center; }
+.footer-logo { font-family: 'Bricolage Grotesque', sans-serif; font-size: 18px; font-weight: 800; letter-spacing: -0.5px; color: var(--text); text-decoration: none; display: inline-block; margin-bottom: 6px; }
+.footer-logo span { color: var(--accent); }
+.footer-desc { font-size: 12px; color: var(--muted); margin-bottom: 10px; }
+.footer-disclosure { font-size: 11px; color: var(--muted); opacity: 0.65; }
+.footer-disclosure strong { color: var(--text2); }
+.footer-social { display: flex; flex-direction: column; gap: 8px; align-items: flex-end; }
+.footer-social-label { font-size: 10px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.8px; font-weight: 600; }
+.footer-social-btns { display: flex; gap: 8px; }
+.footer-social-btn { display: flex; align-items: center; gap: 7px; padding: 9px 16px; border-radius: 99px; border: 1px solid var(--border2); background: var(--surface); font-size: 12px; font-weight: 600; text-decoration: none; transition: all 0.22s; white-space: nowrap; }
+.footer-social-btn svg { width: 14px; height: 14px; flex-shrink: 0; }
+.footer-social-btn.ig { color: #e1306c; }
+.footer-social-btn.ig:hover { background: rgba(225,48,108,0.1); border-color: rgba(225,48,108,0.35); }
+.footer-social-btn.wa { color: #25d366; }
+.footer-social-btn.wa:hover { background: rgba(37,211,102,0.08); border-color: rgba(37,211,102,0.3); }
+.footer-follow-note { font-size: 10px; color: var(--muted); text-align: right; margin-top: 2px; }
+@media (max-width: 600px) { .footer-inner { grid-template-columns: 1fr; } .footer-social { align-items: flex-start; } .footer-follow-note { text-align: left; } }
+
+/* ── FLAG BUTTON ── */
+.flag-section {
+  margin-top: 28px;
+  padding-top: 22px;
+  border-top: 1px solid var(--border);
+}
+.flag-label {
+  font-size: 12px; color: var(--muted);
+  margin-bottom: 10px;
+  display: flex; align-items: center; gap: 6px;
+}
+.flag-label svg { opacity: 0.5; }
+.flag-btn {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 10px 18px;
+  border-radius: 99px;
+  border: 1px solid var(--border2);
+  background: transparent;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13px; font-weight: 500;
+  color: var(--muted);
+  cursor: pointer;
+  transition: all 0.22s;
+  position: relative;
+  overflow: hidden;
+}
+.flag-btn::before {
+  content: '';
+  position: absolute; inset: 0;
+  background: rgba(255,170,0,0.06);
+  opacity: 0; transition: opacity 0.2s;
+}
+.flag-btn:hover::before { opacity: 1; }
+.flag-btn:hover {
+  border-color: rgba(255,170,0,0.35);
+  color: var(--text);
+}
+.flag-btn:hover svg { color: #ffaa00; }
+.flag-btn svg { color: var(--muted); transition: color 0.2s; width: 14px; height: 14px; flex-shrink: 0; }
+.flag-btn.flagged {
+  border-color: rgba(255,170,0,0.35);
+  background: rgba(255,170,0,0.06);
+  color: #ffaa00;
+  cursor: default;
+}
+.flag-btn.flagged svg { color: #ffaa00; }
+.flag-btn.flagged::before { display: none; }
+.flag-count {
+  display: inline-flex; align-items: center; justify-content: center;
+  background: rgba(255,255,255,0.07);
+  border-radius: 99px;
+  padding: 1px 8px;
+  font-size: 11px; font-weight: 700;
+  min-width: 22px;
+  transition: background 0.2s;
+}
+.flag-btn.flagged .flag-count { background: rgba(255,170,0,0.15); }
+
+/* flagged deal warning banner */
+.flagged-banner {
+  display: none;
+  background: rgba(255,170,0,0.06);
+  border: 1px solid rgba(255,170,0,0.2);
+  border-radius: var(--radius-sm);
+  padding: 12px 16px;
+  font-size: 13px; color: #ffcc44;
+  margin-top: 12px;
+  align-items: center; gap: 8px;
+  line-height: 1.5;
+}
+.flagged-banner.show { display: flex; }
+.flagged-banner svg { flex-shrink: 0; opacity: 0.7; }
+
+/* shake animation on flag */
+@keyframes flagShake {
+  0%,100%{transform:translateX(0)}
+  20%{transform:translateX(-3px) rotate(-4deg)}
+  40%{transform:translateX(3px) rotate(4deg)}
+  60%{transform:translateX(-2px) rotate(-2deg)}
+  80%{transform:translateX(2px) rotate(2deg)}
+}
+.flag-shake { animation: flagShake 0.4s ease; }
 </style>
 </head>
 <body>
 
-<header>
-  <a class="logo" href="/"><span class="logo-yb">YB</span> Deals</a>
-  <a class="back-btn" href="/">
+<header id="siteHeader">
+  <a class="logo" href="/"><span class="logo-yb">YB</span>&nbsp;Deals</a>
+  <div style="display:flex;align-items:center;gap:8px;">
+    <div class="social-header-icons">
+      <a class="social-icon-btn ig" href="https://instagram.com/ybdeals" target="_blank" rel="noopener" aria-label="Instagram">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg>
+      </a>
+      <a class="social-icon-btn wa" href="https://wa.me/16317068587" target="_blank" rel="noopener" aria-label="WhatsApp">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413Z"/></svg>
+      </a>
+    </div>
+    <a class="back-btn" href="/">
     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
     All Deals
   </a>
+  </div>
 </header>
 
 <div class="page" id="pageContent">
-  <div class="state-msg"><p>Loading deal…</p></div>
+  <div class="state-msg"><p style="color:var(--muted)">Loading deal…</p></div>
 </div>
 
 <footer>
-  <p><strong>Affiliate Disclosure:</strong> We may earn a small commission when you click links and make purchases, at no extra cost to you.</p>
+  <div class="footer-inner">
+    <div>
+      <a class="footer-logo" href="/"><span>YB</span> Deals</a>
+      <p class="footer-desc">Handpicked deals from Amazon, Walmart &amp; more — every day.</p>
+      <p class="footer-disclosure"><strong>Affiliate Disclosure:</strong> We may earn a small commission when you click links and make purchases, at no extra cost to you.</p>
+    </div>
+    <div class="footer-social">
+      <div class="footer-social-label">Follow us</div>
+      <div class="footer-social-btns">
+        <a class="footer-social-btn ig" href="https://instagram.com/ybdeals" target="_blank" rel="noopener">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg>
+          @ybdeals
+        </a>
+        <a class="footer-social-btn wa" href="https://wa.me/16317068587" target="_blank" rel="noopener">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413Z"/></svg>
+          +1 (631) 706-8587
+        </a>
+      </div>
+      <div class="footer-follow-note">Save the number to see our WhatsApp Status deals 👆</div>
+    </div>
+  </div>
 </footer>
 
 <script>
 const SUPABASE_URL = 'https://pxeeecaveqrhldoblbtm.supabase.co';
 const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InB4ZWVlY2F2ZXFyaGxkb2JsYnRtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA1MTM4MjYsImV4cCI6MjA5NjA4OTgyNn0.OPdlQGurMfYZzjFaQU6-n-K4TygG0QfkwDbQ9diQT4s';
 const DB = SUPABASE_URL + '/rest/v1/deals';
-const HEADERS = { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + SUPABASE_KEY };
+const HEADERS = {'apikey':SUPABASE_KEY,'Authorization':'Bearer '+SUPABASE_KEY,'Content-Type':'application/json'};
+const slug = t => t.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
+const pct  = (p,o) => Math.round((1-p/o)*100);
 
-function slug(title) {
-  return title.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
-}
-
-function pct(p,o){ return Math.round((1-p/o)*100); }
+window.addEventListener('scroll', () => {
+  document.getElementById('siteHeader').classList.toggle('scrolled', window.scrollY > 8);
+}, {passive:true});
 
 async function loadDeal() {
-  // get slug from URL: /deal/product-name
   const parts = window.location.pathname.split('/');
-  const dealSlug = parts[parts.length - 1] || parts[parts.length - 2];
-
+  const dealSlug = parts[parts.length-1] || parts[parts.length-2];
   if (!dealSlug) { showError(); return; }
-
   try {
-    const res = await fetch(DB + '?order=created_at.desc', { headers: HEADERS });
+    const res = await fetch(DB+'?order=created_at.desc', {headers:HEADERS});
     const deals = await res.json();
-    const deal = deals.find(d => slug(d.title) === dealSlug);
+    const deal = deals.find(d => slug(d.title)===dealSlug);
     if (!deal) { showError(); return; }
     renderDeal(deal);
-    document.title = deal.title + " – YB Deals";
-  } catch(e) {
-    console.error('loadDeal error:', e);
-    showError();
-  }
+    initFlag(deal.id, deal.flags || 0);
+    document.title = deal.title + ' – YB Deals';
+  } catch(e) { showError(); }
 }
 
 function renderDeal(d) {
@@ -136,22 +444,20 @@ function renderDeal(d) {
 
   const imgHtml = d.image_url
     ? `<img src="${d.image_url}" alt="${d.title}">`
-    : `<span>${d.emoji || '🛍️'}</span>`;
+    : `<span>${d.emoji||'🛍️'}</span>`;
 
-  const couponHtml = d.coupon
-    ? `<div class="info-divider"></div>
-       <div class="section-label">🏷️ Coupon / How to Apply</div>
-       <div class="coupon-box">
-         <div class="coupon-label">Instructions</div>
-         <div class="coupon-text">${d.coupon}</div>
-       </div>`
-    : '';
+  const couponHtml = d.coupon ? `
+    <div class="info-divider"></div>
+    <div class="section-label">🏷️ How to Apply Coupon</div>
+    <div class="coupon-box">
+      <div class="coupon-label">Instructions</div>
+      <div class="coupon-text">${d.coupon}</div>
+    </div>` : '';
 
-  const descHtml = d.description
-    ? `<div class="info-divider"></div>
-       <div class="section-label">📋 About this deal</div>
-       <div class="description-text">${d.description}</div>`
-    : '';
+  const descHtml = d.description ? `
+    <div class="info-divider"></div>
+    <div class="section-label">📋 About this Deal</div>
+    <div class="description-text">${d.description}</div>` : '';
 
   document.getElementById('pageContent').innerHTML = `
     <div class="breadcrumb">
@@ -159,69 +465,167 @@ function renderDeal(d) {
       <span>›</span>
       <a href="/">${d.category}</a>
       <span>›</span>
-      ${d.title}
+      <span style="color:var(--text2)">${d.title}</span>
     </div>
     <div class="deal-layout">
       <div class="product-img-wrap">${imgHtml}</div>
       <div class="deal-info">
         <div class="deal-store">${d.store}</div>
-        <div class="deal-title">${d.title}</div>
+        <h1 class="deal-title">${d.title}</h1>
         <div class="deal-pricing">
           <span class="price-now">$${d.price}</span>
           <span class="price-was">$${d.original}</span>
         </div>
         <div class="savings-row">
           <span class="disc-pill">-${disc}% OFF</span>
+          <span class="save-pill">
+            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+            Save $${save}
+          </span>
         </div>
-        <a class="get-deal-btn" href="${d.link || '#'}" target="_blank" rel="noopener sponsored">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+        <a class="get-deal-btn" href="${d.link||'#'}" target="_blank" rel="noopener sponsored">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
           Get Deal at ${d.store}
         </a>
         <div class="deal-note">You'll be redirected to ${d.store}. Prices may vary.</div>
         <div class="share-bar">
           <span class="share-label">Share:</span>
           <button class="share-btn share-copy" onclick="copyLink()">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
             Copy link
           </button>
           <button class="share-btn share-wa" onclick="shareWhatsApp()">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413Z"/></svg>
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413Z"/></svg>
             WhatsApp
           </button>
         </div>
         ${descHtml}
         ${couponHtml}
+        <div class="flag-section" id="flagSection">
+          <div class="flag-label">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="13" height="13"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" y1="22" x2="4" y2="15"/></svg>
+            Is this deal no longer available?
+          </div>
+          <button class="flag-btn" id="flagBtn" onclick="flagDeal()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" y1="22" x2="4" y2="15"/></svg>
+            Report expired deal
+            <span class="flag-count" id="flagCount">0</span>
+          </button>
+          <div class="flagged-banner" id="flaggedBanner">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+            This deal has been flagged by multiple users as possibly expired. We'll check and update it soon.
+          </div>
+        </div>
       </div>
     </div>`;
 }
 
-// OG tags handled server-side by edge function
-
 function copyLink() {
-  const url = window.location.href;
-  navigator.clipboard.writeText(url).then(() => {
+  navigator.clipboard.writeText(window.location.href).then(() => {
     const btn = document.querySelector('.share-copy');
     const orig = btn.innerHTML;
-    btn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg> Copied!';
-    btn.style.borderColor = 'rgba(0,230,118,0.4)';
-    btn.style.color = '#00e676';
-    setTimeout(() => { btn.innerHTML = orig; btn.style.borderColor = ''; btn.style.color = ''; }, 2000);
+    btn.innerHTML = '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg> Copied!';
+    btn.style.color = '#00e676'; btn.style.borderColor = 'rgba(0,230,118,0.4)';
+    setTimeout(() => { btn.innerHTML=orig; btn.style.color=''; btn.style.borderColor=''; }, 2000);
   });
 }
-
 function shareWhatsApp() {
-  var url = window.location.href;
-  var title = document.title;
-  window.open('https://wa.me/?text=' + encodeURIComponent(title + '\n' + url), '_blank');
+  window.open('https://wa.me/?text='+encodeURIComponent(document.title+'\n'+window.location.href),'_blank');
 }
-
 function showError() {
   document.getElementById('pageContent').innerHTML = `
     <div class="state-msg">
       <h2>Deal not found</h2>
       <p>This deal may have expired or been removed.</p>
-      <a href="/" style="display:inline-block;margin-top:20px;background:var(--accent);color:#fff;padding:10px 24px;border-radius:99px;text-decoration:none;font-weight:600;">← Back to all deals</a>
+      <a href="/" style="display:inline-block;margin-top:24px;background:var(--accent);color:#fff;padding:12px 28px;border-radius:99px;text-decoration:none;font-weight:700;font-family:'DM Sans',sans-serif;">← Back to all deals</a>
     </div>`;
+}
+
+
+// ── FLAG LOGIC ──
+const FLAG_THRESHOLD = 3; // show warning banner after this many flags
+let currentDealId = null;
+
+function initFlag(dealId, currentFlags) {
+  currentDealId = dealId;
+  const flagBtn   = document.getElementById('flagBtn');
+  const flagCount = document.getElementById('flagCount');
+  const banner    = document.getElementById('flaggedBanner');
+  if (!flagBtn) return;
+
+  // check if this user already flagged this deal
+  const flaggedDeals = JSON.parse(localStorage.getItem('ybdeals_flagged') || '{}');
+  const alreadyFlagged = flaggedDeals[dealId];
+
+  const count = currentFlags || 0;
+  flagCount.textContent = count;
+
+  if (alreadyFlagged) {
+    flagBtn.classList.add('flagged');
+    flagBtn.disabled = true;
+    flagBtn.title = 'You already reported this deal';
+    flagBtn.innerHTML = `
+      <svg viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="0" width="14" height="14"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" y1="22" x2="4" y2="15" stroke="currentColor" stroke-width="2"/></svg>
+      Thanks for reporting!
+      <span class="flag-count" id="flagCount">${count}</span>`;
+  }
+
+  if (count >= FLAG_THRESHOLD) {
+    banner.classList.add('show');
+  }
+}
+
+async function flagDeal() {
+  if (!currentDealId) return;
+  const flagBtn = document.getElementById('flagBtn');
+  if (flagBtn.disabled) return;
+
+  // prevent double click
+  flagBtn.disabled = true;
+
+  try {
+    // increment flags in supabase
+    const res = await fetch(`${DB}?id=eq.${currentDealId}`, { headers: HEADERS });
+    const data = await res.json();
+    const deal = data[0];
+    if (!deal) return;
+
+    const newCount = (deal.flags || 0) + 1;
+    await fetch(`${DB}?id=eq.${currentDealId}`, {
+      method: 'PATCH',
+      headers: { ...HEADERS, 'Prefer': 'return=minimal' },
+      body: JSON.stringify({ flags: newCount })
+    });
+
+    // save to localStorage so user can't flag again
+    const flaggedDeals = JSON.parse(localStorage.getItem('ybdeals_flagged') || '{}');
+    flaggedDeals[currentDealId] = true;
+    localStorage.setItem('ybdeals_flagged', JSON.stringify(flaggedDeals));
+
+    // update UI
+    const flagCount = document.getElementById('flagCount');
+    flagCount.textContent = newCount;
+
+    // animate the flag icon
+    const svgEl = flagBtn.querySelector('svg');
+    if (svgEl) svgEl.classList.add('flag-shake');
+
+    flagBtn.classList.add('flagged');
+    flagBtn.innerHTML = `
+      <svg viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="0" width="14" height="14"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" y1="22" x2="4" y2="15" stroke="currentColor" stroke-width="2"/></svg>
+      Thanks for reporting!
+      <span class="flag-count" id="flagCount">${newCount}</span>`;
+
+    // show banner if threshold reached
+    if (newCount >= FLAG_THRESHOLD) {
+      const banner = document.getElementById('flaggedBanner');
+      banner.classList.add('show');
+    }
+
+  } catch(e) {
+    flagBtn.disabled = false;
+    console.error('Flag error:', e);
+  }
 }
 
 loadDeal();
